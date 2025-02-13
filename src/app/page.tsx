@@ -9,7 +9,13 @@ import { useAlert } from "@/context/alert-context"
 
 export default function PageWrapper() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="w-screen h-screen flex items-center justify-center bg-stone-50 dark:bg-slate-950 text-slate-950 dark:text-slate-100">
+          Loading...
+        </div>
+      }
+    >
       <Page />
     </Suspense>
   )
