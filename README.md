@@ -1,36 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend Developer Intern Test - Aksamedia
 
-## Getting Started
+## 🚀 Proyek: **Dashboard CRUD dengan Autentikasi dan Theming**
 
-First, run the development server:
+Proyek ini merupakan implementasi dari tes masuk magang **Frontend Developer** di **PT Aksamedia Mulia Digital**. Aplikasi ini dibuat menggunakan **Next.js** dengan **Tailwind CSS**, tanpa library UI tambahan.
+
+---
+
+## 🎯 **Fitur Utama**
+
+### 🔐 **Autentikasi Tanpa API**
+
+- Hanya memiliki fitur **login**, tidak ada fitur register.
+- **User tetap login** meskipun halaman direfresh, menggunakan **cookie**.
+- **Logout tersedia di dropdown** dalam navbar.
+- **Proteksi halaman**, hanya pengguna yang login yang bisa mengakses halaman kecuali `/sign-in`.
+
+### 📋 **CRUD Data dengan Local Storage**
+
+- CRUD dilakukan tanpa API, menggunakan **Local Storage**.
+- Data tetap tersimpan meskipun halaman direfresh.
+- **Fitur pencarian (search/filter)** untuk mempermudah pencarian data.
+- **Paginasi manual** tanpa library pihak ketiga.
+- **State halaman dan filter tetap terjaga** saat refresh menggunakan **query string**.
+
+### 🎨 **Dark Mode / Light Mode**
+
+- **3 Mode Theme**: `Light`, `Dark`, `System (mengikuti OS)`.
+- **Default** mengikuti tema OS.
+- Jika sistem OS berubah, aplikasi secara otomatis akan menyesuaikan tema.
+
+### 🏷️ **Edit Profil User**
+
+- User dapat **mengedit nama profil** langsung dari halaman **Profile**.
+- **Nama di navbar diperbarui secara otomatis** setelah diedit.
+- Data tetap tersimpan meskipun halaman direfresh.
+
+### 📱 **UI & UX yang Responsif**
+
+- Dibangun dengan **Tailwind CSS**, **tanpa library UI** seperti Material UI atau Chakra UI.
+- **Fully responsive**, dapat diakses dengan baik di **desktop, tablet, dan mobile**.
+
+---
+
+## 🏗 **Teknologi yang Digunakan**
+
+| Teknologi         | Deskripsi                              |
+| ----------------- | -------------------------------------- |
+| **Next.js**       | Framework React untuk pengembangan web |
+| **Tailwind CSS**  | Utility-first CSS framework            |
+| **Local Storage** | Menyimpan data CRUD tanpa API          |
+| **Cookies**       | Menyimpan status login user            |
+| **Lucide Icons**  | Digunakan untuk ikon UI                |
+
+---
+
+## 📂 **Struktur Folder**
+
+```
+/src
+ ├── app
+ │   ├── layout.tsx          # Layout utama aplikasi
+ │   ├── middleware.ts        # Middleware untuk proteksi halaman
+ │   ├── page.tsx             # Halaman utama dashboard dengan CRUD
+ │   ├── profile/page.tsx     # Halaman edit profil user
+ │   ├── sign-in/page.tsx     # Halaman login
+ │
+ ├── components
+ │   ├── navbar.tsx           # Navbar dengan dropdown user dan logout
+ │   ├── toggle-theme.tsx     # Komponen untuk mengubah tema aplikasi
+ │   ├── theme-provider.tsx   # Provider untuk mengelola tema
+ │
+ ├── utils
+ │   ├── auth.ts              # Logic autentikasi menggunakan cookies
+ │   ├── storage.ts           # CRUD data dengan Local Storage
+ │
+ ├── styles
+ │   ├── globals.css          # File global styles Tailwind
+```
+
+---
+
+## ⚡ **Instalasi dan Menjalankan Proyek**
+
+### **1️⃣ Clone Repository**
+
+```bash
+git clone https://github.com/username/repo.git
+cd repo
+```
+
+### **2️⃣ Install Dependencies**
+
+```bash
+npm install
+# atau
+yarn install
+```
+
+### **3️⃣ Jalankan Development Server**
 
 ```bash
 npm run dev
-# or
+# atau
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Aplikasi dapat diakses di **http://localhost:3000**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌍 **Deploy**
 
-## Learn More
+Proyek ini dapat di-deploy menggunakan **Vercel** atau **Netlify**.
 
-To learn more about Next.js, take a look at the following resources:
+### **Deploy di Vercel**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run build
+vercel
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🛠 **Penggunaan**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Login dengan credential yang tersedia:**
+   - `admin / admin123`
+   - `user1 / password1`
+   - `guest / guestpass`
+2. Setelah login, user diarahkan ke halaman dashboard.
+3. Dapat melakukan **CRUD data**, pencarian, dan paginasi.
+4. User bisa mengedit nama profil di halaman **Profile**.
+5. Logout melalui dropdown di navbar.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🔥 **Fitur yang Dapat Dikembangkan Lebih Lanjut**
+
+- Implementasi **IndexedDB** untuk penyimpanan lebih besar.
+- Menambahkan **animasi transisi** untuk pengalaman UI yang lebih baik.
+- Konfirmasi saat menghapus item.
+- Notifikasi saat sukses login, logout, atau menyimpan perubahan.
+
+---
+
+## 📜 **Lisensi**
+
+Proyek ini dibuat untuk keperluan tes magang di PT Aksamedia Mulia Digital dan **tidak** memiliki lisensi khusus.
+
+---
+
+🚀 **Selamat Mengerjakan!** Semoga sukses dalam tes magangnya! 🎉

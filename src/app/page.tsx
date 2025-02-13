@@ -1,101 +1,267 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { isAuthenticated, getUser } from "@/utils/auth";
+import { getItems, addItem, deleteItem, updateItem } from "@/utils/storage";
+import { Trash2, Plus, Search, Edit } from "lucide-react";
+import Navbar from "@/components/navbar";
 
-export default function Home() {
+export default function PageWrapper() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <Suspense fallback={<div>Loading...</div>}>
+      <Page />
+    </Suspense>
+  );
+}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+function Page() {
+  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [items, setItems] = useState<{ id: number; name: string }[]>([]);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [editItem, setEditItem] = useState<{ id: number; name: string } | null>(
+    null
+  );
+  const itemsPerPage = 5;
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Periksa apakah user sudah login
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      router.push("/sign-in");
+      return;
+    }
+    setUser(getUser());
+    setItems(getItems());
+  }, [router]);
+
+  // Baca query string saat halaman dimuat atau berubah
+  useEffect(() => {
+    const querySearch = searchParams.get("search") || "";
+    const queryPage = parseInt(searchParams.get("page") || "1", 10);
+
+    setSearch(querySearch);
+    setDebouncedSearch(querySearch);
+    setCurrentPage(queryPage);
+  }, [searchParams]);
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      if (debouncedSearch !== search) {
+        setDebouncedSearch(search);
+        router.push(`/?search=${search}&page=${currentPage}`);
+      }
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  // Handle search input
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newSearch = e.target.value;
+
+    setSearch(newSearch);
+
+    // Reset pagination to first page
+    if (currentPage !== 1) {
+      setCurrentPage(1);
+      router.push(`/?search=${newSearch}&page=1`);
+    }
+  };
+
+  // Handle pagination
+  const handlePageChange = (newPage: number) => {
+    if (newPage !== currentPage) {
+      setCurrentPage(newPage);
+      router.push(`/?search=${debouncedSearch}&page=${newPage}`);
+    }
+  };
+
+  // Menambahkan item baru
+  const handleAddItem = () => {
+    const updatedItems = addItem(`Item ${items.length + 1}`);
+    setItems(updatedItems);
+  };
+
+  // Menghapus item berdasarkan ID
+  const handleDeleteItem = (id: number) => {
+    const updatedItems = deleteItem(id);
+    setItems(updatedItems);
+  };
+
+  // Membuka modal edit
+  const handleEditItem = (item: { id: number; name: string }) => {
+    setEditItem(item);
+  };
+
+  // Menyimpan perubahan nama item
+  const handleSaveEdit = () => {
+    if (!editItem || !editItem.name.trim()) return;
+    const updatedItems = updateItem(editItem.id, editItem.name);
+    setItems(updatedItems);
+    setEditItem(null); // Tutup modal setelah edit
+  };
+
+  // Filter berdasarkan pencarian
+  const filteredItems = items.filter((item) =>
+    item.name.toLowerCase().includes(debouncedSearch.toLowerCase())
+  );
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const displayedItems = filteredItems.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  return (
+    <>
+      <Navbar />
+
+      <div className="p-6 mx-auto min-h-screen bg-white dark:bg-stone-950">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-black dark:text-white">
+            Dashboard
+          </h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+
+        {user && (
+          <p className="mb-4 text-black dark:text-white">
+            Welcome, {user.username}!
+          </p>
+        )}
+
+        {/* Search Input */}
+        <div className="relative mb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={handleSearchChange}
+            className="w-full p-2 border border-stone-600 bg-white dark:bg-stone-800 dark:border-stone-700 rounded text-black dark:text-white focus:ring focus:ring-stone-500"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+          <Search className="absolute right-3 top-3 text-stone-400" size={20} />
+        </div>
+
+        {/* Add Item Button */}
+        <button
+          onClick={handleAddItem}
+          className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 text-black dark:text-white font-bold py-2 px-4 rounded w-full hover:bg-stone-200 dark:hover:bg-stone-700 mb-4 transition"
         >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <Plus size={20} />
+          Add Item
+        </button>
+
+        {/* Items List */}
+        <ul className="border border-stone-300 dark:border-stone-600 rounded p-4 bg-white dark:bg-stone-900">
+          {displayedItems.length > 0 ? (
+            displayedItems.map((item) => (
+              <li
+                key={item.id}
+                className="flex justify-between items-center py-2 border-b border-stone-200 dark:border-stone-700"
+              >
+                <span className="text-black dark:text-white">{item.name}</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditItem(item)}
+                    className="text-yellow-600 dark:text-yellow-400 hover:text-yellow-500 transition"
+                  >
+                    <Edit size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteItem(item.id)}
+                    className="text-red-600 dark:text-red-400 hover:text-red-500 transition"
+                  >
+                    <Trash2 size={20} />
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <p className="text-stone-500 dark:text-stone-400 text-center">
+              No items found.
+            </p>
+          )}
+        </ul>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4 gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`px-4 py-2 border rounded ${
+                  page === currentPage
+                    ? "bg-stone-200 dark:bg-stone-700 text-black dark:text-white"
+                    : "bg-stone-100 dark:bg-stone-800 text-black dark:text-white"
+                } transition hover:bg-stone-300 dark:hover:bg-stone-600`}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Modal Edit Item */}
+        {editItem && (
+          <div
+            className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 backdrop-blur-md transition-opacity duration-300 z-50"
+            onClick={() => setEditItem(null)} // Klik di luar modal untuk menutup
+          >
+            <div
+              className="relative bg-white dark:bg-stone-900 p-6 rounded-xl shadow-xl text-black dark:text-white w-96 animate-fadeIn"
+              onClick={(e) => e.stopPropagation()} // Hindari modal tertutup saat diklik di dalamnya
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center border-b border-stone-300 dark:border-stone-700 pb-3">
+                <h2 className="text-xl font-bold">Edit Item</h2>
+                <button
+                  onClick={() => setEditItem(null)}
+                  className="text-stone-500 dark:text-stone-400 hover:text-stone-600 dark:hover:text-stone-300 transition"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Input Field */}
+              <div className="mt-4">
+                <label className="block text-stone-600 dark:text-stone-300 text-sm mb-2">
+                  Item Name
+                </label>
+                <input
+                  type="text"
+                  value={editItem.name}
+                  onChange={(e) =>
+                    setEditItem({ ...editItem, name: e.target.value })
+                  }
+                  className="w-full p-2 border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-800 rounded-lg text-black dark:text-white focus:ring focus:ring-stone-500 outline-none transition"
+                  autoFocus
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex justify-end gap-3 mt-5">
+                <button
+                  onClick={() => setEditItem(null)}
+                  className="px-4 py-2 rounded-lg bg-stone-300 dark:bg-stone-700 hover:bg-stone-400 dark:hover:bg-stone-600 text-black dark:text-white transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 rounded-lg bg-stone-500 dark:bg-stone-800 hover:bg-stone-600 dark:hover:bg-stone-700 text-white transition"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
