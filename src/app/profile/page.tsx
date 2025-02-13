@@ -1,39 +1,39 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { isAuthenticated, getUser, updateUser, logout } from "@/utils/auth";
-import { Save, LogOut, MoveLeftIcon } from "lucide-react";
-import Link from "next/link";
-import Navbar from "@/components/navbar";
+"use client"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { isAuthenticated, getUser, updateUser, logout } from "@/utils/auth"
+import { Save, LogOut, MoveLeftIcon } from "lucide-react"
+import Link from "next/link"
+import Navbar from "@/components/navbar"
 
 export default function ProfilePage() {
-  const [user, setUser] = useState<{ username: string } | null>(null);
-  const [newUsername, setNewUsername] = useState("");
-  const router = useRouter();
+  const [user, setUser] = useState<{ username: string } | null>(null)
+  const [newUsername, setNewUsername] = useState("")
+  const router = useRouter()
 
   // Periksa apakah user sudah login
   useEffect(() => {
     if (!isAuthenticated()) {
-      router.push("/sign-in");
-      return;
+      router.push("/sign-in")
+      return
     }
-    const loggedInUser = getUser();
-    setUser(loggedInUser);
-    setNewUsername(loggedInUser?.username || "");
-  }, [router]);
+    const loggedInUser = getUser()
+    setUser(loggedInUser)
+    setNewUsername(loggedInUser?.username || "")
+  }, [router])
 
   // Menangani perubahan username
   const handleSaveChanges = () => {
-    if (!newUsername.trim()) return;
-    updateUser({ username: newUsername });
-    setUser({ username: newUsername });
-  };
+    if (!newUsername.trim()) return
+    updateUser({ username: newUsername })
+    setUser({ username: newUsername })
+  }
 
   // Logout user
   const handleLogout = () => {
-    logout();
-    router.push("/sign-in");
-  };
+    logout()
+    router.push("/sign-in")
+  }
 
   return (
     <>
@@ -107,5 +107,5 @@ export default function ProfilePage() {
         )}
       </div>
     </>
-  );
+  )
 }

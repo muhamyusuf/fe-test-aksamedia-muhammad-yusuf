@@ -1,127 +1,127 @@
-"use client";
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { isAuthenticated, getUser } from "@/utils/auth";
-import { getItems, addItem, deleteItem, updateItem } from "@/utils/storage";
-import { Trash2, Plus, Search, Edit } from "lucide-react";
-import Navbar from "@/components/navbar";
-import { useAlert } from "@/context/alert-context";
+"use client"
+import { useState, useEffect, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { isAuthenticated, getUser } from "@/utils/auth"
+import { getItems, addItem, deleteItem, updateItem } from "@/utils/storage"
+import { Trash2, Plus, Search, Edit } from "lucide-react"
+import Navbar from "@/components/navbar"
+import { useAlert } from "@/context/alert-context"
 
 export default function PageWrapper() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <Page />
     </Suspense>
-  );
+  )
 }
 
 function Page() {
-  const [user, setUser] = useState<{ username: string } | null>(null);
-  const [items, setItems] = useState<{ id: number; name: string }[]>([]);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [user, setUser] = useState<{ username: string } | null>(null)
+  const [items, setItems] = useState<{ id: number; name: string }[]>([])
+  const [search, setSearch] = useState("")
+  const [debouncedSearch, setDebouncedSearch] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
   const [editItem, setEditItem] = useState<{ id: number; name: string } | null>(
     null
-  );
-  const itemsPerPage = 5;
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { showAlert } = useAlert();
+  )
+  const itemsPerPage = 5
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { showAlert } = useAlert()
 
   // Periksa apakah user sudah login
   useEffect(() => {
     if (!isAuthenticated()) {
-      router.push("/sign-in");
-      return;
+      router.push("/sign-in")
+      return
     }
-    setUser(getUser());
-    setItems(getItems());
-  }, [router, setUser]);
+    setUser(getUser())
+    setItems(getItems())
+  }, [router, setUser])
 
   // Baca query string saat halaman dimuat atau berubah
   useEffect(() => {
-    const querySearch = searchParams.get("search") || "";
-    const queryPage = parseInt(searchParams.get("page") || "1", 10);
+    const querySearch = searchParams.get("search") || ""
+    const queryPage = parseInt(searchParams.get("page") || "1", 10)
 
-    setSearch(querySearch);
-    setDebouncedSearch(querySearch);
-    setCurrentPage(queryPage);
-  }, [searchParams]);
+    setSearch(querySearch)
+    setDebouncedSearch(querySearch)
+    setCurrentPage(queryPage)
+  }, [searchParams])
 
   // Debounce search input
   useEffect(() => {
     const handler = setTimeout(() => {
       if (debouncedSearch !== search) {
-        setDebouncedSearch(search);
-        router.push(`/?search=${search}&page=${currentPage}`);
+        setDebouncedSearch(search)
+        router.push(`/?search=${search}&page=${currentPage}`)
       }
-    }, 500);
+    }, 500)
 
-    return () => clearTimeout(handler);
-  }, [search, debouncedSearch, currentPage, router]);
+    return () => clearTimeout(handler)
+  }, [search, debouncedSearch, currentPage, router])
 
   // Handle search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newSearch = e.target.value;
+    const newSearch = e.target.value
 
-    setSearch(newSearch);
+    setSearch(newSearch)
 
     // Reset pagination to first page
     if (currentPage !== 1) {
-      setCurrentPage(1);
-      router.push(`/?search=${newSearch}&page=1`);
+      setCurrentPage(1)
+      router.push(`/?search=${newSearch}&page=1`)
     }
-  };
+  }
 
   // Handle pagination
   const handlePageChange = (newPage: number) => {
     if (newPage !== currentPage) {
-      setCurrentPage(newPage);
-      router.push(`/?search=${debouncedSearch}&page=${newPage}`);
+      setCurrentPage(newPage)
+      router.push(`/?search=${debouncedSearch}&page=${newPage}`)
     }
-  };
+  }
 
   // Menambahkan item baru
   const handleAddItem = () => {
-    console.log("Add Item...");
-    const updatedItems = addItem(`Item ${items.length + 1}`);
-    setItems(updatedItems);
-    showAlert("Item added successfully!", "success");
-  };
+    console.log("Add Item...")
+    const updatedItems = addItem(`Item ${items.length + 1}`)
+    setItems(updatedItems)
+    showAlert("Item added successfully!", "success")
+  }
 
   // Menghapus item berdasarkan ID
   const handleDeleteItem = (id: number) => {
-    const updatedItems = deleteItem(id);
-    setItems(updatedItems);
-    showAlert("Item deleted successfully!", "success");
-  };
+    const updatedItems = deleteItem(id)
+    setItems(updatedItems)
+    showAlert("Item deleted successfully!", "success")
+  }
 
   // Membuka modal edit
   const handleEditItem = (item: { id: number; name: string }) => {
-    setEditItem(item);
-  };
+    setEditItem(item)
+  }
 
   // Menyimpan perubahan nama item
   const handleSaveEdit = () => {
-    if (!editItem || !editItem.name.trim()) return;
-    const updatedItems = updateItem(editItem.id, editItem.name);
-    setItems(updatedItems);
-    setEditItem(null); // Tutup modal setelah edit
-    showAlert("Item updated successfully!", "success");
-  };
+    if (!editItem || !editItem.name.trim()) return
+    const updatedItems = updateItem(editItem.id, editItem.name)
+    setItems(updatedItems)
+    setEditItem(null) // Tutup modal setelah edit
+    showAlert("Item updated successfully!", "success")
+  }
 
   // Filter berdasarkan pencarian
   const filteredItems = items.filter((item) =>
     item.name.toLowerCase().includes(debouncedSearch.toLowerCase())
-  );
+  )
 
   // Pagination Logic
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage)
   const displayedItems = filteredItems.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
-  );
+  )
 
   return (
     <>
@@ -275,5 +275,5 @@ function Page() {
         )}
       </div>
     </>
-  );
+  )
 }

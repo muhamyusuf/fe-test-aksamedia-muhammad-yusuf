@@ -1,28 +1,28 @@
-"use client";
+"use client"
 
-import { createContext, useState, useContext, ReactNode } from "react";
+import { createContext, useState, useContext, ReactNode } from "react"
 
 interface AlertContextType {
-  showAlert: (message: string, type?: "success" | "error" | "info") => void;
+  showAlert: (message: string, type?: "success" | "error" | "info") => void
 }
 
-const AlertContext = createContext<AlertContextType | undefined>(undefined);
+const AlertContext = createContext<AlertContextType | undefined>(undefined)
 
 export function AlertProvider({ children }: { children: ReactNode }) {
   const [alert, setAlert] = useState<{ message: string; type: string } | null>(
     null
-  );
+  )
 
   const showAlert = (
     message: string,
     type: "success" | "error" | "info" = "info"
   ) => {
-    setAlert({ message, type });
+    setAlert({ message, type })
 
     setTimeout(() => {
-      setAlert(null);
-    }, 3000); // Alert hilang setelah 3 detik
-  };
+      setAlert(null)
+    }, 3000) // Alert hilang setelah 3 detik
+  }
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
@@ -37,23 +37,23 @@ export function AlertProvider({ children }: { children: ReactNode }) {
             alert.type === "success"
               ? "bg-green-600"
               : alert.type === "error"
-              ? "bg-red-600"
-              : "bg-blue-600"
+                ? "bg-red-600"
+                : "bg-blue-600"
           }`}
         >
           {alert.message}
         </div>
       )}
     </AlertContext.Provider>
-  );
+  )
 }
 
 export function useAlert() {
-  const context = useContext(AlertContext);
+  const context = useContext(AlertContext)
 
   if (!context) {
-    throw new Error("useAlert must be used within an AlertProvider");
+    throw new Error("useAlert must be used within an AlertProvider")
   }
 
-  return context;
+  return context
 }

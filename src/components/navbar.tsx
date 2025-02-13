@@ -1,38 +1,38 @@
-"use client";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { isAuthenticated, getUser, logout } from "@/utils/auth";
-import { User, LogOut, ChevronDown } from "lucide-react";
-import Link from "next/link";
-import { ToggleTheme } from "@/components/toggle-theme";
+"use client"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { isAuthenticated, getUser, logout } from "@/utils/auth"
+import { User, LogOut, ChevronDown } from "lucide-react"
+import Link from "next/link"
+import { ToggleTheme } from "@/components/toggle-theme"
 
 export default function Navbar() {
-  const [user, setUser] = useState<{ username: string } | null>(null);
-  const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [user, setUser] = useState<{ username: string } | null>(null)
+  const [isDropdownOpen, setDropdownOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   // Delay untuk mendapatkan data user setelah login
   useEffect(() => {
     const timer = setTimeout(() => {
       if (isAuthenticated()) {
-        setUser(getUser());
+        setUser(getUser())
       }
-      setLoading(false); // Hapus loading setelah data didapat
-    }, 500); // Delay 500ms agar cookies bisa diperbarui terlebih dahulu
+      setLoading(false) // Hapus loading setelah data didapat
+    }, 500) // Delay 500ms agar cookies bisa diperbarui terlebih dahulu
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => clearTimeout(timer)
+  }, [])
 
   // Handler Logout
   const handleLogout = () => {
-    logout();
-    setUser(null);
-    router.push("/sign-in");
-  };
+    logout()
+    setUser(null)
+    router.push("/sign-in")
+  }
 
   // Mendapatkan inisial user dari username
-  const getInitials = (name: string) => name.charAt(0).toUpperCase();
+  const getInitials = (name: string) => name.charAt(0).toUpperCase()
 
   return (
     <nav className="bg-white dark:bg-stone-950 p-2 md:p-4 text-black dark:text-white flex justify-between items-center shadow-md">
@@ -100,5 +100,5 @@ export default function Navbar() {
         ) : null}
       </div>
     </nav>
-  );
+  )
 }
