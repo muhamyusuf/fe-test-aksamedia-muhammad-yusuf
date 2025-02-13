@@ -85,8 +85,7 @@ Proyek ini merupakan implementasi dari tes masuk magang **Frontend Developer** d
 ### **1️⃣ Clone Repository**
 
 ```bash
-git clone https://github.com/username/repo.git
-cd repo
+git clone https://github.com/muhamyusuf/fe-test-aksamedia-muhammad-yusuf.git .
 ```
 
 ### **2️⃣ Install Dependencies**
