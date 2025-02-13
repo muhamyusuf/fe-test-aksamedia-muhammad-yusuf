@@ -59,7 +59,7 @@ Proyek ini merupakan implementasi dari tes masuk magang **Frontend Developer** d
 ```
 /src
  ├── app
- │   ├── layout.tsx          # Layout utama aplikasi
+ │   ├── layout.tsx           # Layout utama aplikasi
  │   ├── middleware.ts        # Middleware untuk proteksi halaman
  │   ├── page.tsx             # Halaman utama dashboard dengan CRUD
  │   ├── profile/page.tsx     # Halaman edit profil user
