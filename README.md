@@ -149,5 +149,3 @@ vercel
 Proyek ini dibuat untuk keperluan tes magang di PT Aksamedia Mulia Digital dan **tidak** memiliki lisensi khusus.
 
 ---
-
-🚀 **Selamat Mengerjakan!** Semoga sukses dalam tes magangnya! 🎉
