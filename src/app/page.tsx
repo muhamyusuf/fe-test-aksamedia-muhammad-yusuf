@@ -5,6 +5,7 @@ import { isAuthenticated, getUser } from "@/utils/auth";
 import { getItems, addItem, deleteItem, updateItem } from "@/utils/storage";
 import { Trash2, Plus, Search, Edit } from "lucide-react";
 import Navbar from "@/components/navbar";
+import { useAlert } from "@/context/alert-context";
 
 export default function PageWrapper() {
   return (
@@ -26,6 +27,7 @@ function Page() {
   const itemsPerPage = 5;
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showAlert } = useAlert();
 
   // Periksa apakah user sudah login
   useEffect(() => {
@@ -35,7 +37,7 @@ function Page() {
     }
     setUser(getUser());
     setItems(getItems());
-  }, [router]);
+  }, [router, setUser]);
 
   // Baca query string saat halaman dimuat atau berubah
   useEffect(() => {
@@ -57,7 +59,7 @@ function Page() {
     }, 500);
 
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, debouncedSearch, currentPage, router]);
 
   // Handle search input
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,14 +84,17 @@ function Page() {
 
   // Menambahkan item baru
   const handleAddItem = () => {
+    console.log("Add Item...");
     const updatedItems = addItem(`Item ${items.length + 1}`);
     setItems(updatedItems);
+    showAlert("Item added successfully!", "success");
   };
 
   // Menghapus item berdasarkan ID
   const handleDeleteItem = (id: number) => {
     const updatedItems = deleteItem(id);
     setItems(updatedItems);
+    showAlert("Item deleted successfully!", "success");
   };
 
   // Membuka modal edit
@@ -103,6 +108,7 @@ function Page() {
     const updatedItems = updateItem(editItem.id, editItem.name);
     setItems(updatedItems);
     setEditItem(null); // Tutup modal setelah edit
+    showAlert("Item updated successfully!", "success");
   };
 
   // Filter berdasarkan pencarian
@@ -121,15 +127,15 @@ function Page() {
     <>
       <Navbar />
 
-      <div className="p-6 mx-auto min-h-screen bg-white dark:bg-stone-950">
+      <div className="p-2 md:p-6 mx-auto min-h-screen bg-white dark:bg-stone-950">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-black dark:text-white">
+          <h1 className="text-3xl font-bold text-black dark:text-white tracking-tighter">
             Dashboard
           </h1>
         </div>
 
         {user && (
-          <p className="mb-4 text-black dark:text-white">
+          <p className="mb-4 text-black dark:text-white tracking-tighter">
             Welcome, {user.username}!
           </p>
         )}
@@ -141,22 +147,27 @@ function Page() {
             placeholder="Search..."
             value={search}
             onChange={handleSearchChange}
-            className="w-full p-2 border border-stone-600 bg-white dark:bg-stone-800 dark:border-stone-700 rounded text-black dark:text-white focus:ring focus:ring-stone-500"
+            className="w-full p-2 border border-stone-600 bg-white dark:bg-stone-800 dark:border-stone-700 rounded-lg text-black dark:text-white focus:ring focus:ring-stone-500 tracking-tighter"
           />
+
           <Search className="absolute right-3 top-3 text-stone-400" size={20} />
         </div>
 
         {/* Add Item Button */}
         <button
           onClick={handleAddItem}
-          className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 text-black dark:text-white font-bold py-2 px-4 rounded w-full hover:bg-stone-200 dark:hover:bg-stone-700 mb-4 transition"
+          className="flex items-center gap-2 bg-stone-100 dark:bg-stone-800 text-black dark:text-white font-bold py-2 px-4 rounded-lg w-full hover:bg-stone-200 dark:hover:bg-stone-700 mb-4 transition"
         >
           <Plus size={20} />
           Add Item
         </button>
 
         {/* Items List */}
-        <ul className="border border-stone-300 dark:border-stone-600 rounded p-4 bg-white dark:bg-stone-900">
+        <ul className="border border-stone-300 dark:border-stone-600 rounded-lg p-4 bg-white dark:bg-stone-900 tracking-tighter">
+          <h2 className="text-2xl font-bold text-black dark:text-white tracking-tighter">
+            List Items
+          </h2>
+
           {displayedItems.length > 0 ? (
             displayedItems.map((item) => (
               <li
@@ -171,6 +182,7 @@ function Page() {
                   >
                     <Edit size={20} />
                   </button>
+
                   <button
                     onClick={() => handleDeleteItem(item.id)}
                     className="text-red-600 dark:text-red-400 hover:text-red-500 transition"
@@ -194,7 +206,7 @@ function Page() {
               <button
                 key={page}
                 onClick={() => handlePageChange(page)}
-                className={`px-4 py-2 border rounded ${
+                className={`px-4 py-2 border border-stone-300 dark:border-stone-500 rounded-lg ${
                   page === currentPage
                     ? "bg-stone-200 dark:bg-stone-700 text-black dark:text-white"
                     : "bg-stone-100 dark:bg-stone-800 text-black dark:text-white"
@@ -213,7 +225,7 @@ function Page() {
             onClick={() => setEditItem(null)} // Klik di luar modal untuk menutup
           >
             <div
-              className="relative bg-white dark:bg-stone-900 p-6 rounded-xl shadow-xl text-black dark:text-white w-96 animate-fadeIn"
+              className="relative bg-white dark:bg-stone-900 p-6 rounded-lg shadow-xl text-black dark:text-white w-96 animate-fadeIn"
               onClick={(e) => e.stopPropagation()} // Hindari modal tertutup saat diklik di dalamnya
             >
               {/* Header */}
@@ -244,16 +256,16 @@ function Page() {
               </div>
 
               {/* Actions */}
-              <div className="flex justify-end gap-3 mt-5">
+              <div className="flex justify-end gap-1 mt-5">
                 <button
                   onClick={() => setEditItem(null)}
-                  className="px-4 py-2 rounded-lg bg-stone-300 dark:bg-stone-700 hover:bg-stone-400 dark:hover:bg-stone-600 text-black dark:text-white transition"
+                  className="px-4 py-2 rounded-lg bg-stone-300 dark:bg-stone-800 hover:bg-stone-400 dark:hover:bg-stone-600 text-black dark:text-white transition"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSaveEdit}
-                  className="px-4 py-2 rounded-lg bg-stone-500 dark:bg-stone-800 hover:bg-stone-600 dark:hover:bg-stone-700 text-white transition"
+                  className="px-4 py-2 rounded-lg bg-stone-500 dark:bg-stone-700 hover:bg-stone-600 dark:hover:bg-stone-600 text-white transition"
                 >
                   Save
                 </button>

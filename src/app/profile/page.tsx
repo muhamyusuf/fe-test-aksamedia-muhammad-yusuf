@@ -39,14 +39,14 @@ export default function ProfilePage() {
     <>
       <Navbar />
 
-      <div className="p-6 mx-auto min-h-screen bg-white dark:bg-stone-950 text-black dark:text-white flex flex-col items-center">
-        <h1 className="text-3xl font-bold mb-6">Profile</h1>
+      <div className="md:p-6 p-2 mx-auto min-h-screen bg-white dark:bg-stone-950 text-black dark:text-white flex flex-col items-center">
+        <h1 className="text-3xl font-bold mb-6 tracking-tighter">Profile</h1>
 
         {/* Link back to / */}
         <div className="mb-10 self-start">
           <Link
             href="/"
-            className="flex gap-3 items-center text-stone-600 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition"
+            className="flex gap-3 items-center text-stone-600 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition tracking-tighter"
           >
             <MoveLeftIcon size={18} />
             Back to Dashboard
@@ -54,9 +54,9 @@ export default function ProfilePage() {
         </div>
 
         {user ? (
-          <div className="w-full bg-stone-200 dark:bg-stone-900 p-6 rounded-lg shadow-md dark:shadow-stone-800">
+          <div className="w-full bg-stone-50 dark:bg-stone-800 p-2 md:p-6 rounded-lg shadow-sm dark:shadow-stone-700">
             {/* Profile Icon & Username */}
-            <div className="flex items-center gap-3 mb-6">
+            <div className="flex items-center gap-3 mb-6 tracking-tighter">
               <div className="w-14 h-14 flex items-center justify-center bg-stone-300 text-black dark:bg-stone-700 dark:text-white font-bold text-2xl rounded-full">
                 {user.username.charAt(0).toUpperCase()}
               </div>
@@ -69,7 +69,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Form untuk Mengubah Username */}
-            <div className="mb-4">
+            <div className="mb-4 tracking-tighter">
               <label className="block text-stone-700 dark:text-stone-300 mb-2">
                 Username
               </label>
@@ -77,15 +77,15 @@ export default function ProfilePage() {
                 type="text"
                 value={newUsername}
                 onChange={(e) => setNewUsername(e.target.value)}
-                className="w-full p-2 border border-stone-400 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 rounded text-stone-900 dark:text-white focus:ring focus:ring-stone-500 outline-none transition"
+                className="w-full p-2 border border-stone-400 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 rounded-lg text-stone-900 dark:text-white focus:ring focus:ring-stone-500 outline-none transition"
               />
             </div>
 
             {/* Buttons */}
-            <div className="flex gap-3 flex-col md:flex-row">
+            <div className="flex gap-3 flex-col md:flex-row tracking-tighter">
               <button
                 onClick={handleSaveChanges}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition"
+                className="flex items-center gap-2 bg-green-700 dark:bg-green-900 hover:bg-green-800 dark:hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition"
               >
                 <Save size={18} />
                 Save Changes
@@ -93,7 +93,7 @@ export default function ProfilePage() {
 
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition"
+                className="flex items-center gap-2 bg-red-700 dark:bg-red-900 hover:bg-red-800 dark:hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition"
               >
                 <LogOut size={18} />
                 Logout

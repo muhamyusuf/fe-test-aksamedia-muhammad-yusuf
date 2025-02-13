@@ -1,5 +1,7 @@
 # Frontend Developer Intern Test - Aksamedia
 
+Link deployment [Check Here](https://fe-test-aksamedia-muhammad-yusuf.vercel.app)
+
 ## 🚀 Proyek: **Dashboard CRUD dengan Autentikasi dan Theming**
 
 Proyek ini merupakan implementasi dari tes masuk magang **Frontend Developer** di **PT Aksamedia Mulia Digital**. Aplikasi ini dibuat menggunakan **Next.js** dengan **Tailwind CSS**, tanpa library UI tambahan.
@@ -131,15 +133,6 @@ vercel
 3. Dapat melakukan **CRUD data**, pencarian, dan paginasi.
 4. User bisa mengedit nama profil di halaman **Profile**.
 5. Logout melalui dropdown di navbar.
-
----
-
-## 🔥 **Fitur yang Dapat Dikembangkan Lebih Lanjut**
-
-- Implementasi **IndexedDB** untuk penyimpanan lebih besar.
-- Menambahkan **animasi transisi** untuk pengalaman UI yang lebih baik.
-- Konfirmasi saat menghapus item.
-- Notifikasi saat sukses login, logout, atau menyimpan perubahan.
 
 ---
 

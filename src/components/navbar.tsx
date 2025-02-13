@@ -35,8 +35,8 @@ export default function Navbar() {
   const getInitials = (name: string) => name.charAt(0).toUpperCase();
 
   return (
-    <nav className="bg-white dark:bg-stone-950 p-4 text-black dark:text-white flex justify-between items-center shadow-md">
-      <h1 className="text-2xl font-bold tracking-wide">Dashboard</h1>
+    <nav className="bg-white dark:bg-stone-950 p-2 md:p-4 text-black dark:text-white flex justify-between items-center shadow-md">
+      <h1 className="text-2xl font-bold tracking-tighter">InternTest</h1>
 
       <div className="flex items-center gap-4">
         <ToggleTheme />
@@ -68,17 +68,17 @@ export default function Navbar() {
 
             {/* Dropdown Menu */}
             {isDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-stone-900 text-black dark:text-white rounded shadow-lg overflow-hidden z-50 animate-fade-in">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-stone-900 text-black dark:text-white rounded-lg shadow-lg overflow-hidden z-40 animate-fade-in border border-stone-300 dark:border-stone-700">
                 {/* Profile */}
                 <Link
                   href={"/profile"}
-                  className="flex items-center gap-2 px-4 py-3 bg-gray-100 dark:bg-stone-800 hover:bg-gray-200 dark:hover:bg-stone-700 transition"
+                  className="flex items-center gap-2 px-4 py-3 dark:bg-stone-800 hover:bg-gray-200 dark:hover:bg-stone-700 transition"
                 >
                   <User
                     size={20}
                     className="text-gray-600 dark:text-gray-300"
                   />
-                  <span className="font-medium">Profile</span>
+                  <span className="font-medium tracking-tighter">Profile</span>
                 </Link>
 
                 <hr className="border-gray-300 dark:border-stone-700" />
@@ -86,7 +86,7 @@ export default function Navbar() {
                 {/* Logout */}
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2 px-4 py-3 hover:bg-gray-200 dark:hover:bg-stone-700 transition"
+                  className="w-full flex items-center gap-2 px-4 py-3 hover:bg-gray-200 dark:hover:bg-stone-700 transition tracking-tighter"
                 >
                   <LogOut
                     size={20}
